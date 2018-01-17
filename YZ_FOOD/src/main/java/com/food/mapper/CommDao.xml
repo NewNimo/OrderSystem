@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.food.mapper.CommDao">
+
+	<select id="getUser" resultType="Integer">
+		select count(*) from food_user where user=#{user}
+	</select>
+	<select id="getUserByid" resultType="Integer">
+		select count(*) from food_user where uid=#{uid}
+	</select>
+	
+	
+	
+	<insert id="addUser">
+		insert into food_user (nickname,user,password) value(#{nickname},#{user},#{password})
+	</insert>
+	<delete id="deluser">
+		delete from food_user where uid=#{uid}
+	</delete>
+	
+	<select id="login" resultType="com.food.vo.UserVo">
+		select * from food_user where user=#{user} and password=#{password}
+	</select>
+	
+	<update id="updatePassword">
+		update food_user set password=#{password} where user=#{user}
+	</update>
+
+	<select id="getFood" resultType="Integer">
+		select count(*) from food_list where foodname=#{name}
+	</select>
+
+	<insert id="addFood">
+		insert into food_list (foodname,logtime) value(#{name},now())
+	</insert>
+	
+	<delete id="delFood">
+		delete from food_list where foodid=#{foodid}
+	</delete>
+	
+	<select id="getOrder" resultType="Integer">
+		select count(*) from food_day where uid=#{uid} and `day`=DATE_FORMAT(NOW(), '%Y%m%d')
+	</select>
+	
+	<insert id="order">
+		insert into food_day (uid,foodid,day,reason,ip) value(#{uid},#{foodid},now(),#{reason},#{ip})
+	</insert>
+	
+	<delete id="cancel">
+		delete from food_day where uid=#{uid} and day=now()
+	</delete>
+		
+	<select id="foodlist" resultType="com.food.vo.FoodVo">
+		select * from food_list
+	</select>
+	<select id="orderlist" resultType="com.food.vo.OrderVo">
+			SELECT d.*,u.nickname,l.foodname FROM food_day d  LEFT JOIN food_user u ON u.uid=d.uid 
+		LEFT JOIN food_list l ON l.foodid=d.foodid  WHERE d.`day`=DATE_FORMAT(NOW(), '%Y%m%d')
+	</select>
+		<select id="userlist" resultType="com.food.vo.UserVo">
+		select * from food_user
+	</select>
+	
+	<select id="foodfinal" resultType="com.food.vo.FoodVo">
+			SELECT l.foodname,COUNT(*) AS num FROM  food_day d LEFT JOIN food_list l ON d.foodid=l.foodid WHERE d.`day`=DATE_FORMAT(NOW(), '%Y%m%d') GROUP BY d.foodid  
+	</select>
+</mapper>
